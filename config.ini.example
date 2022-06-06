@@ -1,0 +1,8 @@
+[gitea]
+host=
+token_main_account=
+token_clone_account=
+
+[github]
+username=
+token=
