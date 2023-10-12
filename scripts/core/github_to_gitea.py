@@ -1,4 +1,4 @@
-from gitea import AlreadyExistsException, Gitea
+from gitea import AlreadyExistsException, Gitea, Repository, MigrationServices, Organization
 from github import Github
 
 
@@ -83,15 +83,23 @@ class GithubToGitea:
                 repo_name = f"{gh_owner_name}_{repo_name}"
 
             try:
-                gitea_account.post_repos_migrate(
+                Repository.migrate_repo(
+                    gitea_account,
+                    service=MigrationServices.GITHUB,
                     clone_addr=repo.clone_url,
-                    auth_username=self.github_username,
-                    auth_password=self.github_token,
-                    uid=gitea_entity.id,
                     repo_name=repo_name,
+                    description=repo.description[:255] if repo.description else 'No Description',
+                    auth_token=self.github_token,
+                    auth_username=self.github_username,
                     mirror=mirror,
                     private=gh_private,
-                    description=repo.description[:255] if repo.description else 'No Description'
+                    wiki=True,
+                    labels=True,
+                    issues=True,
+                    pull_requests=True,
+                    milestones=True,
+                    repo_owner=gitea_entity.name if type(gitea_entity) == Organization else gitea_entity.login_name
+                    # uid=gitea_entity.id,
                 )
             except AlreadyExistsException as e:
                 print('Repo already exists')
