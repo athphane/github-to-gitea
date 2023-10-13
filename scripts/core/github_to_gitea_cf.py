@@ -1,7 +1,6 @@
+from core.cf_ready.cf_gitea import CFGitea
 from gitea import AlreadyExistsException, Repository, MigrationServices, Organization
 from github import Github
-
-from core.cf_ready.cf_gitea import CFGitea
 
 
 class GithubToGiteaCF:
