@@ -8,13 +8,7 @@ if __name__ == '__main__':
     config = configparser.ConfigParser()
     config.read('config.ini')
 
-    gitea = GithubToGitea(
-        config.get('gitea', 'host'),
-        config.get('gitea', 'token_main_account'),
-        config.get('gitea', 'token_clone_account'),
-        config.get('github', 'username'),
-        config.get('github', 'token'),
-    )
+    gitea = GithubToGitea.from_config(config)
 
     print(f"Gitea Version: {gitea.gitea_clone_account.get_version()}")
     print(f"API-Token belongs to user: {gitea.user.username}")
