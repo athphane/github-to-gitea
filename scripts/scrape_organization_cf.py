@@ -1,19 +1,15 @@
 import configparser
 import sys
 
-from core.github_to_gitea_cf import GithubToGiteaCF
+from core.github_to_gitea import GithubToGitea
 
 config = configparser.ConfigParser()
 config.read('config.ini')
 
-gitea = GithubToGiteaCF(
-    config.get('gitea_private', 'host'),
-    config.get('gitea_private', 'token_main_account'),
-    config.get('gitea_private', 'token_clone_account'),
-    config.get('github', 'username'),
-    config.get('github', 'token'),
-    config.get('cloudflare', 'cf_access_client_id'),
-    config.get('cloudflare', 'cf_access_client_secret'),
+gitea = GithubToGitea.from_config(
+    config,
+    gitea_section='gitea_private',
+    use_cloudflare=True,
 )
 
 if __name__ == '__main__':

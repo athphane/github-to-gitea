@@ -6,13 +6,7 @@ from core.github_to_gitea import GithubToGitea
 config = configparser.ConfigParser()
 config.read('config.ini')
 
-gitea = GithubToGitea(
-    config.get('gitea', 'host'),
-    config.get('gitea', 'token_main_account'),
-    config.get('gitea', 'token_clone_account'),
-    config.get('github', 'username'),
-    config.get('github', 'token')
-)
+gitea = GithubToGitea.from_config(config)
 
 if __name__ == '__main__':
     organization_name = None
