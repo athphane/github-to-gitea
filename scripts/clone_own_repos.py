@@ -5,4 +5,4 @@ if __name__ == '__main__':
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
     from gitea_mirror.cli import main
 
-    main(['--section', 'gitea_private', 'org', *sys.argv[1:]])
+    main(['owned'])
