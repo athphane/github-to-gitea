@@ -12,12 +12,12 @@ The `gitea-mirror` CLI (or `venv/bin/python -m gitea_mirror`) supports four subc
 gitea-mirror stars                         # mirror all starred repos
 gitea-mirror owned                          # mirror repos owned by you
 gitea-mirror org <org_name>                 # mirror all repos in a GitHub org
-gitea-mirror org <org_name> --section gitea_private   # use CF-protected Gitea
+gitea-mirror --section gitea_private org <org_name>   # use CF-protected Gitea
 gitea-mirror search                         # interactive search and mirror
 ```
 
 Global options: `--config PATH` (default `config.ini`), `--section SECTION` (default `gitea`), `--debug`.
-Per subcommand: `--no-mirror` (clone without mirroring), `--workers N` (concurrent mirrors, default 1). `search` also takes `--limit N`.
+Batch commands: `--no-mirror` (clone without mirroring), `--workers N` (concurrent mirrors, default 5; use 1 for sequential). `search` takes `--limit N`.
 
 The old `scripts/` wrappers still work:
 ```bash
@@ -51,5 +51,6 @@ When a repo belongs to a GitHub organization, the script creates that org on Git
 ## Gotchas
 - Repo descriptions are truncated to 255 chars (Gitea DB limit).
 - `find_org_from_gitea` is recursive with a max depth of 10; if org creation silently fails it raises `RecursionError` instead of looping infinitely.
-- Repo lists are cached per entity `username` so existence checks hit the API once per account/org, not once per repo.
-- No test suite, no CI.
+- Repo lists and organizations are cached. Preparation runs on the calling thread; migrations use separate Gitea sessions in a worker pool.
+- tqdm shows preparation and completion progress, with console logging redirected above the bars. Bars are disabled for non-terminal output.
+- Run offline regression tests with `venv/bin/python -m unittest discover -s tests`. No CI.

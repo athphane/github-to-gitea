@@ -4,9 +4,17 @@ import argparse
 import logging
 
 from gitea_mirror import CFGitea, Config, GithubToGitea
+from gitea_mirror.mirror import DEFAULT_WORKERS
 
 logger = logging.getLogger(__name__)
 _SEARCH_LIMIT = 10
+
+
+def _positive_int(value: str) -> int:
+    number = int(value)
+    if number < 1:
+        raise argparse.ArgumentTypeError('must be at least 1')
+    return number
 
 
 def _create_gitea(config: Config) -> GithubToGitea:
@@ -156,10 +164,10 @@ def main(argv: list[str] | None = None) -> None:
     )
     p_stars.add_argument(
         '--workers',
-        type=int,
-        default=1,
+        type=_positive_int,
+        default=DEFAULT_WORKERS,
         metavar='N',
-        help='Concurrent mirror workers (default: 1, sequential)',
+        help=f'Concurrent workers (default: {DEFAULT_WORKERS}; 1 for sequential)',
     )
     p_stars.set_defaults(func=cmd_stars)
 
@@ -173,10 +181,10 @@ def main(argv: list[str] | None = None) -> None:
     )
     p_owned.add_argument(
         '--workers',
-        type=int,
-        default=1,
+        type=_positive_int,
+        default=DEFAULT_WORKERS,
         metavar='N',
-        help='Concurrent mirror workers (default: 1, sequential)',
+        help=f'Concurrent workers (default: {DEFAULT_WORKERS}; 1 for sequential)',
     )
     p_owned.set_defaults(func=cmd_owned)
 
@@ -191,10 +199,10 @@ def main(argv: list[str] | None = None) -> None:
     )
     p_org.add_argument(
         '--workers',
-        type=int,
-        default=1,
+        type=_positive_int,
+        default=DEFAULT_WORKERS,
         metavar='N',
-        help='Concurrent mirror workers (default: 1, sequential)',
+        help=f'Concurrent workers (default: {DEFAULT_WORKERS}; 1 for sequential)',
     )
     p_org.set_defaults(func=cmd_org)
 

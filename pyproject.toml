@@ -7,6 +7,7 @@ dependencies = [
     "prettytable>=2.4",
     "py-gitea",
     "PyGithub>=1.55",
+    "tqdm>=4.64",
 ]
 
 [project.scripts]

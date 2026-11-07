@@ -42,17 +42,28 @@ Get your Gitea tokens at `https://git.domain.com/user/settings/applications`. Ma
 ### Usage
 
 ```bash
-gitea-mirror stars                          # mirror all your starred repos
+gitea-mirror stars                          # mirror starred repos, 5 at a time
 gitea-mirror stars --workers 10             # ...with 10 concurrent workers
+gitea-mirror stars --workers 1              # process repos sequentially
 gitea-mirror owned                          # mirror repos you own
 gitea-mirror search                         # interactive search and pick
 gitea-mirror org <org_name>                 # mirror all repos in a GitHub org
-gitea-mirror org <org_name> --section gitea_private  # via CF-protected Gitea
+gitea-mirror --section gitea_private org <org_name>  # via CF-protected Gitea
 ```
 
 Global options: `--config PATH`, `--section SECTION`, `--debug`.
 
-Per subcommand: `--no-mirror` (clone without mirroring), `--workers N` (concurrent mirrors, default 1). `search` also takes `--limit N`.
+Batch commands (`stars`, `owned`, `org`) accept `--no-mirror` (clone without
+mirroring) and `--workers N` (concurrent migrations, default 5). Use
+`--workers 1` for sequential migrations. `search` takes `--limit N`.
+
+Repository preparation runs first, then a worker pool submits migrations to
+Gitea concurrently. tqdm progress bars show preparation and completed requests,
+with counts for mirrored, skipped, and failed repositories. Console logs appear
+above the bars, and bars are automatically disabled when output is redirected.
+Failures are logged and do not stop the remaining repositories. Gitea may
+continue importing a repository after its migration request returns; the bars
+track API requests, not server-side import progress.
 
 > The old `python scripts/*.py` wrappers still work for backward compatibility.
 
