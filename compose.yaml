@@ -1,0 +1,15 @@
+services:
+  mirror:
+    build: .
+    image: athphane/github-to-gitea:local
+    pull_policy: never
+    command: ["owned"]
+    restart: "no"
+    init: true
+    volumes:
+      - type: bind
+        source: ./config.ini
+        target: /app/config.ini
+        read_only: true
+        bind:
+          create_host_path: false

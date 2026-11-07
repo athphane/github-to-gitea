@@ -28,6 +28,17 @@ python scripts/scrape_organization.py <org_name>
 python scripts/scrape_organization_cf.py <org_name>
 ```
 
+## Docker
+- After making changes to this project, run `./scripts/rebuild-image.sh` before handing work back so the local Docker image includes the latest code. The script only builds; it does not start migrations. It works from any directory and accepts Compose build flags such as `--no-cache`.
+- Compose uses the local image `athphane/github-to-gitea:local` with `pull_policy: never`. Keep the image local; do not publish it to a registry.
+- Run the configured batch with `docker compose up --no-color --exit-code-from mirror mirror`. Compose builds the image if missing and reuses it otherwise. Edit `command` in `compose.yaml` to change the default `owned` job.
+- Run other one-off commands with `docker compose run --rm mirror owned` (or `org`, `search`). `config.ini` is mounted read-only and must already exist.
+- The image runs Python 3.12 on Alpine 3.23 as UID 1000. Pass `docker run --user UID:GID` if the mounted config requires another user's permissions.
+- `.dockerignore` allows only application/build files into the context; never copy credentials into the image.
+- Schedule `scripts/run-mirror.sh` in host cron. It resolves the project directory, runs the configured Compose job, appends output to `mirror.log`, and skips overlapping runs using `/tmp/gitea-mirror.lock`. Do not allocate a TTY for scheduled runs.
+- Dedicated runners: `scripts/run-owned.sh`, `scripts/run-stars.sh`, and `scripts/run-org.sh ORG_NAME`. They forward batch options such as `--workers N` and `--no-mirror` through `run-mirror.sh`, using temporary Compose containers. The shared runner accepts full CLI arguments (e.g. `--section gitea_private org ORG_NAME`); with no arguments it still runs the configured Compose job via `up`. All runners share the same lock and log.
+- The runner uses Bash and rotates output while writing: 10 MiB per log, three backups (`mirror.log.1`–`mirror.log.3`), at most 40 MiB retained. Keep rotation under the run lock and preserve Compose's exit status.
+
 ## Linting
 ```bash
 venv/bin/ruff check .

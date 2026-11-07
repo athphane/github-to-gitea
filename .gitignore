@@ -4,3 +4,5 @@ config.ini
 __pycache__/
 .ruff_cache/
 *.egg-info/
+/mirror.log
+/mirror.log.*

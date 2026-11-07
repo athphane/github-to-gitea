@@ -1,0 +1,10 @@
+# Only send the files needed to build the CLI. Credentials and local virtual
+# environments must never enter the build context.
+*
+!Dockerfile
+!pyproject.toml
+!requirements.txt
+!gitea_mirror/
+!gitea_mirror/**
+**/__pycache__/
+**/*.py[cod]
